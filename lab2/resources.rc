@@ -1,0 +1,37 @@
+#include "resource.h"
+
+
+STRINGTABLE
+BEGIN
+    IDS_PLAYERNUMBER, "Number : %i"
+END
+
+
+
+IDI_ICON ICON DISCARDABLE "barca.ico"
+IDR_MYMENU MENU
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Exit", ID_FILE_EXIT
+    END
+
+    POPUP "Information"
+    BEGIN
+        MENUITEM "About", ID_STUFF_ABOUT
+    END
+
+    POPUP "Change font color"
+    BEGIN
+        MENUITEM "Red Font", ID_EVENT_RED
+        MENUITEM "Green Font", ID_EVENT_GREEN
+        MENUITEM "Blue Font", ID_EVENT_BLUE
+    END
+
+END
+
+ID_ACCELERATOR ACCELERATORS
+BEGIN
+    "^R", ID_EVENT_RED, ASCII, NOINVERT
+END
+

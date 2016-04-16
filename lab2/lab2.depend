@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1460800321 source:c:\users\admin\desktop\dorin\pw\laboratory 2\lab2_code\lab2\main.cpp
+	<windows.h>
+	<stdio.h>
+	"resource.h"
+
+1460731336 source:c:\users\admin\desktop\dorin\pw\laboratory 2\lab2_code\lab2\resources.rc
+	"resource.h"
+
+1460729992 c:\users\admin\desktop\dorin\pw\laboratory 2\lab2_code\lab2\resource.h
+

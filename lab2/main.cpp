@@ -1,43 +1,21 @@
 #include <windows.h>
 #include <stdio.h>
-
-#define BUTTON_ADD_TODO         101
-#define BUTTON_DISPLAY_TODO_NR  102
-#define INPUT_TEXT_SHOW_TODO    103
-#define INPUT_TEXT_ADD_TODO     104
-
-#define IDR_MYMENU 105
-#define IDI_MYICON 201
-
-#define ID_FILE_EXIT 9001
-#define ID_STUFF_ABOUT 9002
+#include "resource.h"
 
 
-
-#define ID_EVENT_RED 9003
-#define ID_EVENT_GREEN 9004
-#define ID_EVENT_BLUE 9005
-#define ID_SCROLL_BAR 9006
-
-
-#define IDC_TODO_LIST  9007
-
-#define IDI_ICON 9008
-#define ID_WIDTH_SCROLL 9009
-#define ID_HEIGHT_SCROLL 9010
-
-#define IDS_TODONUMBER 9011
-
-#define ID_ACCELERATOR 9431
+#define BUTTON_ADD_PLAYER         101
+#define BUTTON_DISPLAY_PLAYER_NR  102
+#define INPUT_TEXT_SHOW_PLAYER    103
+#define INPUT_TEXT_ADD_PLAYER     104
 
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-HWND hTODOList;
-HWND hInputTODO;
-char TODO[500] = "";
-char firstText[] = "TODO List : ";
-int TODONumber = 0;
+HWND hPLAYERList;
+HWND hInputPLAYER;
+char PLAYER[500] = "";
+char firstText[] = "Barca player's List : ";
+int PLAYERNumber = 0;
 static int scrollColor = 0;
 static int widthScroll = 0;
 static int heightScroll = 40;
@@ -51,7 +29,7 @@ static int fontColor[3];
 int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShowCmd) {
 
     hInstance = hInst;
-    //HACCEL hAccel = LoadAccelerators(hInst, MAKEINTRESOURCE(ID_ACCELERATOR));
+    HACCEL hAccel = LoadAccelerators(hInst, MAKEINTRESOURCE(ID_ACCELERATOR));
 
     WNDCLASSEX wClass;
 
@@ -60,8 +38,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
     wClass.lpfnWndProc = (WNDPROC)WinProc;
     wClass.style = CS_HREDRAW|CS_VREDRAW;
     wClass.cbSize = sizeof(WNDCLASSEX);
-    wClass.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
-    wClass.hCursor = LoadCursor(NULL, IDC_HAND);
+    wClass.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(255, 255, 5));
+    wClass.hCursor = LoadCursor(NULL, IDC_HELP);
     wClass.hIconSm = NULL;
     wClass.lpszMenuName  = MAKEINTRESOURCE(IDR_MYMENU);
     wClass.hIcon  = LoadIcon (GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
@@ -86,9 +64,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
             "Window Class",
             "Laboratory Work #2 Dorin Popa",
             WS_OVERLAPPEDWINDOW,
-            500,
-            200,
             400,
+            200,
+            600,
             400,
             NULL,
             hmenu,
@@ -109,22 +87,19 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
     ShowWindow(hWnd,nShowCmd);
 
     MSG msg;
-    //ZeroMemory(&msg,sizeof(MSG));
+
 
 
 
 
     while (GetMessage (&msg, NULL, 0, 0)) {
-        //if (!TranslateAccelerator (hWnd, hAccel, &msg)) {
+        if (!TranslateAccelerator (hWnd, hAccel, &msg)) {
             TranslateMessage (&msg) ;
             DispatchMessage (&msg) ;
-       //}
+       }
     }
 
-    while(GetMessage(&msg,NULL,0,0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+
 
     return 0;
 
@@ -134,14 +109,15 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
     PAINTSTRUCT Ps;
     static HWND hWndList;
     static HWND hWndScroll, hWndWidthScroll, hWndHeightScroll;
-    static RECT rcScroll, rcTODOList, rcInputTODO, rcQuantity;
+    static RECT rcScroll, rcPLAYERList, rcInputPLAYER, rcQuantity;
     HBRUSH hBrushStatic;
+    HBRUSH BrushBlue;
 
 
 
-    SetRect(&rcScroll, 315, 40, 25, 150);
-    SetRect(&rcTODOList, 10, 10, 100, 40);
-    SetRect(&rcInputTODO, 120, 150, 190, 25);
+    SetRect(&rcScroll, 315, 40, 25, 250);
+    SetRect(&rcPLAYERList, 10, 10, 200, 40);
+    SetRect(&rcInputPLAYER, 120, 150, 190, 25);
     SetRect(&rcQuantity, 210, 10, 300, 30);
 
 
@@ -149,23 +125,13 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
     case WM_CREATE: {
 
                 //Create Scrolls
-                hWndScroll = CreateWindowEx((DWORD)NULL,
-                    TEXT("scrollbar"),
-                    NULL,
-                    WS_CHILD | WS_VISIBLE | SBS_VERT,
-                    315, 40, 25, 150,
-                    hWnd,
-                    (HMENU) ID_SCROLL_BAR,
-                    hInstance,
-                    NULL);
-                SetScrollRange(hWndScroll,SB_CTL, 0, 255, FALSE);
-                SetScrollPos(hWndScroll, SB_CTL, 0, TRUE);
+
 
                 hWndWidthScroll = CreateWindowEx((DWORD)NULL,
                     TEXT("scrollbar"),
                     NULL,
                     WS_CHILD | WS_VISIBLE | SBS_HORZ,
-                    10, 230, 300, 20,
+                    10, 160, 300, 20,
                     hWnd,
                     (HMENU)ID_WIDTH_SCROLL,
                     hInstance,
@@ -177,7 +143,7 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
                     TEXT("scrollbar"),
                     NULL,
                     WS_CHILD | WS_VISIBLE | SBS_HORZ,
-                    10, 260, 300, 20,
+                    10, 185, 300, 20,
                     hWnd,
                     (HMENU)ID_HEIGHT_SCROLL,
                     hInstance,
@@ -194,68 +160,74 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
                     "",
                     WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | LBS_STANDARD | WS_BORDER,
                     10, 40,
-                    300, 100,
+                    350, 100,
                     hWnd,
-                    (HMENU) IDC_TODO_LIST,
+                    (HMENU) IDC_PLAYER_LIST,
                     hInstance,
                     NULL);
 
 
                 /**
-                * Create AddTODO Button
+                * Create AddPLAYER Button
                 */
                 HFONT hFont = CreateFont(30,0,0,0,FW_DONTCARE,FALSE,TRUE,FALSE,DEFAULT_CHARSET,OUT_OUTLINE_PRECIS,
                     CLIP_DEFAULT_PRECIS,NULL, VARIABLE_PITCH,TEXT("Impact"));
 
-                HWND hButtonAddTODO = CreateWindowEx(NULL,
+                HWND hButtonAddPLAYER = CreateWindowEx(NULL,
                     "BUTTON",
-                    "Add a task",
+                    "Add the player",
                     WS_TABSTOP|WS_VISIBLE|
                     WS_CHILD|BS_DEFPUSHBUTTON|BS_TOP,
-                    10,
-                    150,
+                    380,
+                    100,
                     100,
                     25,
                     hWnd,
-                    (HMENU)BUTTON_ADD_TODO,
+                    (HMENU)BUTTON_ADD_PLAYER,
                     GetModuleHandle(NULL),
                     NULL);
 
                 /**
-                * Create button ShowTODONumber
+                * Create button ShowPLAYERNumber
                 */
-                HWND hShowTODONumber = CreateWindowEx(NULL,
+                HWND hShowPLAYERNumber = CreateWindowEx(NULL,
                     "BUTTON",
-                    "Display a message",
+                    "FC Barcelona info",
                     WS_TABSTOP|WS_VISIBLE|
                     WS_CHILD|BS_DEFPUSHBUTTON|BS_TOP,
-                    10,
-                    180,
-                    300,
+                    360,
+                    160,
+                    200,
                     40,
                     hWnd,
-                    (HMENU)BUTTON_DISPLAY_TODO_NR,
+                    (HMENU)BUTTON_DISPLAY_PLAYER_NR,
                     GetModuleHandle(NULL),
                     NULL);
-                SendMessage (hShowTODONumber, WM_SETFONT, WPARAM (hFont), TRUE);
+                SendMessage (hShowPLAYERNumber, WM_SETFONT, WPARAM (hFont), TRUE);
 
                 /**
-                * Draw main Input TODO field
+                * Draw main Input PLAYER field
                 */
 
-                hInputTODO = CreateWindowEx(
+                hInputPLAYER = CreateWindowEx(
                     (DWORD)NULL,
                     TEXT("edit"),
                     "",
                     WS_VISIBLE | WS_CHILD | WS_BORDER,
-                    120,
-                    150,
+                    380,
+                    70,
                     190,
                     25,
                     hWnd,
-                    (HMENU)INPUT_TEXT_ADD_TODO,
+                    (HMENU)INPUT_TEXT_ADD_PLAYER,
                     GetModuleHandle(NULL),
                     NULL);
+
+                /**create add player info field**/
+                CreateWindowEx(0, TEXT("static"), "Input player beyond",
+                WS_VISIBLE | WS_CHILD | SS_CENTER,
+                380, 42, 150, 17,
+                hWnd, (HMENU)0, hInstance, NULL);
 
             }
             break;
@@ -268,50 +240,29 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
             */
 
             // Second Text
-            char TODONrMessage[40];
+            char PLAYERNrMessage[40];
             char nr[50];
-            LoadString (hInstance, IDS_TODONUMBER, TODONrMessage, 40) ;
-            wsprintf (nr, TODONrMessage, TODONumber);
+            LoadString (hInstance, IDS_PLAYERNUMBER, PLAYERNrMessage, 40) ;
+            wsprintf (nr, PLAYERNrMessage, PLAYERNumber);
 
             SetBkMode(hdc, TRANSPARENT);
 
             DrawText( hdc, nr, -1, &rcQuantity, DT_SINGLELINE | DT_NOCLIP) ;
-
-            // First Text
-            HFONT hFont = CreateFont(25,0,0,0,FW_DONTCARE,FALSE,TRUE,FALSE,DEFAULT_CHARSET,OUT_OUTLINE_PRECIS,
-            CLIP_DEFAULT_PRECIS,NULL, VARIABLE_PITCH,TEXT("Impact"));
-
-            SelectObject(hdc, hFont);
             SetBkMode(hdc, OPAQUE);
-            SetBkColor(hdc, RGB(scrollColor,scrollColor + 70, scrollColor+150));
             SetTextColor(hdc, RGB(fontColor[0], fontColor[1], fontColor[2]));
-            DrawText(hdc, TEXT(firstText), -1, &rcTODOList, DT_NOCLIP);
+            DrawText(hdc, TEXT(firstText), -1, &rcPLAYERList, DT_NOCLIP);
 
             EndPaint(hWnd, &Ps);
         }
         break;
 
-    case WM_CTLCOLOREDIT: {
-            HDC hdc = (HDC)wParam;
-            HWND hwnd = (HWND)lParam;
-            HBRUSH color;
-
-            if (GetDlgCtrlID(hwnd) == INPUT_TEXT_ADD_TODO) {
-                color = CreateSolidBrush(RGB(225, 225, 225));
-                SetTextColor(hdc, RGB(0, 0, 255));
-                SetBkMode(hdc, TRANSPARENT);
-                SetBkColor(hdc,(LONG)color);
-            }
-            return (LONG) color;
-        }
-        break;
 
     case WM_COMMAND: {
         switch(LOWORD(wParam)) {
-        case BUTTON_ADD_TODO: {
+        case BUTTON_ADD_PLAYER: {
 
                 char buffer[256];
-                SendMessage(hInputTODO,
+                SendMessage(hInputPLAYER,
                     WM_GETTEXT,
                     sizeof(buffer)/sizeof(buffer[0]),
                     reinterpret_cast<LPARAM>(buffer));
@@ -323,36 +274,58 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
                     strcat(newInput, buffer);
 
                     SendMessage(hWndList, LB_ADDSTRING, 0, (LPARAM)newInput);
-                    SendMessage(hInputTODO, WM_SETTEXT, NULL, (LPARAM)"");
-                    TODONumber++;
+                    SendMessage(hInputPLAYER, WM_SETTEXT, NULL, (LPARAM)"");
+                    PLAYERNumber++;
                     InvalidateRect(hWnd, &rcQuantity, TRUE);
 
                 }
             }
             break;
 
-        case BUTTON_DISPLAY_TODO_NR: {
+        case BUTTON_DISPLAY_PLAYER_NR: {
                 char buffer[255] = "";
 
-                switch(TODONumber){
+                switch(PLAYERNumber){
                 case 0:
+                    strcat(buffer, "You dont't have any player. You need 11 to play");
+                    break;
                 case 1:
+                    strcat(buffer, "Not enough players. 10 left!");
+                    break;
                 case 2:
+                    strcat(buffer, "Not enough players. 9 left!");
+                    break;
                 case 3:
-                    strcat(buffer, "Oleg is Ana-maria... S nu spui la nimeni!");
+                    strcat(buffer, "Not enough players. 8 left!");
                     break;
                 case 4:
+                    strcat(buffer, "Not enough players. 7 left!");
+                    break;
                 case 5:
-                case 6:
-                    strcat(buffer, "Some tasks have been added to your daily routine.");
+                    strcat(buffer, "Not enough players. 6 left!");
+                    break;
+                case 7:
+                    strcat(buffer, "Not enough players. 5 left!");
+                    break;
+                case 8:
+                    strcat(buffer, "Not enough players. 4 left!");
+                    break;
+                case 9:
+                    strcat(buffer, "Not enough players. 3 left!");
+                    break;
+                case 10:
+                    strcat(buffer, "Not enough players. 2 left!");
+                    break;
+                case 11:
+                    strcat(buffer, "Not enough players. 1 left!");
                     break;
                 default:
-                    strcat(buffer, "To eliminate the risk of procrastination, you have a bunch of tasks now. You should have finished them yesterday.");
+                    strcat(buffer, "Now your squad is ready for clasico!");
                     break;
                 }
                 MessageBox(NULL,
                     buffer,
-                    "Funny",
+                    "Requirements",
                     MB_ICONINFORMATION);
             }
             break;
@@ -361,10 +334,10 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
             }
             break;
         case ID_STUFF_ABOUT: {
-                char aboutText[255] = "This program is a simple task list.\n ";
+                char aboutText[255] = "FC Barcelona is the best team in the world. Won 5 times the Uefa Champions League, last one was in 2015";
                 MessageBox(NULL,
                     aboutText,
-                    "About",
+                    "About FCB",
                     MB_ICONINFORMATION);
             }
             break;
@@ -372,29 +345,29 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
                 fontColor[0] = 255;
                 fontColor[1] = 0;
                 fontColor[2] = 0;
-                InvalidateRect(hWnd, &rcTODOList, TRUE);
+                InvalidateRect(hWnd, &rcPLAYERList, TRUE);
             }
             break;
         case ID_EVENT_GREEN: {
                 fontColor[0] = 0;
                 fontColor[1] = 255;
                 fontColor[2] = 0;
-                InvalidateRect(hWnd, &rcTODOList, TRUE);
+                InvalidateRect(hWnd, &rcPLAYERList, TRUE);
             }
             break;
         case ID_EVENT_BLUE: {
                 fontColor[0] = 0;
                 fontColor[1] = 0;
                 fontColor[2] = 255;
-                InvalidateRect(hWnd, &rcTODOList, TRUE);
+                InvalidateRect(hWnd, &rcPLAYERList, TRUE);
             }
             break;
 
-        case IDC_TODO_LIST:{
+        case IDC_PLAYER_LIST:{
                 if (HIWORD(wParam) == LBN_DBLCLK) {
                     int index = SendMessage(hWndList, LB_GETCURSEL, 0, 0);
                     SendMessage(hWndList, LB_DELETESTRING, (WPARAM)index, 0);
-                    TODONumber--;
+                    PLAYERNumber--;
                     InvalidateRect(hWnd, &rcQuantity, TRUE);
                 }
             }
@@ -403,54 +376,8 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
     }
     break;
 
-    case WM_SIZE: {
-            /*INT nWidth = LOWORD(lParam);
-            HWND hFunnyButton = GetDlgItem(hWnd, BUTTON_DISPLAY_TODO_NR);
-            MoveWindow(hFunnyButton, 10, 180, nWidth - 17, 40, TRUE);
-            HWND hShowTODOInput = GetDlgItem(hWnd, INPUT_TEXT_SHOW_TODO);
-            HWND hAddTODO = GetDlgItem(hWnd, INPUT_TEXT_ADD_TODO);
-            MoveWindow(hShowTODOInput, 10, 40, nWidth - 18, 100, TRUE);
-            MoveWindow(hAddTODO, 120, 150, nWidth - 128, 25, TRUE);*/
-        }
-        break;
 
-    case WM_VSCROLL: {
-            switch (LOWORD(wParam)) {
-            case SB_LINEDOWN: {
-                    scrollColor = min (255, scrollColor + 1);
-                }
-                break;
-            case SB_LINEUP: {
-                    scrollColor = min (255, scrollColor - 1);
-                }
-                break;
-            case SB_PAGEDOWN: {
-                    scrollColor += 15;
-                }
-                break;
-            case SB_PAGEUP: {
-                    scrollColor -= 15;
-                }
-                break;
-            case SB_BOTTOM: {
-                    scrollColor = 255;
-                }
-                break;
-            case SB_TOP: {
-                    scrollColor = 0;
-                }
-                break;
-            case SB_THUMBPOSITION:
-            case SB_THUMBTRACK: {
-                    scrollColor = HIWORD(wParam);
-                }
-                break;
-            }
 
-            SetScrollPos(hWndScroll, SB_CTL, scrollColor, TRUE);
-            InvalidateRect(hWnd, &rcTODOList, TRUE);
-        }
-        break;
 
     case WM_HSCROLL: {
             RECT rect;
@@ -501,39 +428,24 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam) {
         }
         break;
 
-    case WM_GETMINMAXINFO: {
-            MINMAXINFO * mmiStruct;
-            mmiStruct = (MINMAXINFO*)lParam;
 
-            POINT ptPoint;
-
-            ptPoint.x = 335;    //Minimum width of the window.
-            ptPoint.y = 260;    //Minimum height of the window.
-            mmiStruct->ptMinTrackSize = ptPoint;
-
-            ptPoint.x = GetSystemMetrics(SM_CXMAXIMIZED);   //Maximum width of the window.
-            ptPoint.y = GetSystemMetrics(SM_CYMAXIMIZED);   //Maximum height of the window.
-            mmiStruct->ptMaxTrackSize = ptPoint;
-        }
-        break;
 
     case WM_KEYDOWN: {
             switch (wParam) {
 
-            case VK_SPACE : {
+            case 0x42 : {   // 0x42 is the virtual key for "B" character
                     if (HIBYTE(GetAsyncKeyState(VK_LCONTROL))) {
-                        scrollColor = 0;
-                        SetScrollPos(hWndScroll, SB_CTL, scrollColor, TRUE);
-                        InvalidateRect(hWnd, &rcTODOList, TRUE);
-                        return 0;
+                    BrushBlue = CreateSolidBrush(RGB(30, 50, 60));
+                    SetClassLongPtr(hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)BrushBlue);
+                    InvalidateRect(hWnd, NULL, TRUE);
                     }
                 }
                 break;
-            case VK_F1: {
+            case VK_BACK: {
                     if (HIBYTE(GetAsyncKeyState(VK_LCONTROL))) {
 
                         SendMessage(hWndList, LB_RESETCONTENT, 0, 0);
-                        TODONumber = 0;
+                        PLAYERNumber = 0;
                         InvalidateRect(hWnd, &rcQuantity, TRUE);
 
                     }
