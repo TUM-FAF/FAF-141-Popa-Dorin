@@ -1,0 +1,38 @@
+# depslib dependency file v1.0
+1460891946 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\object.cpp
+	"object.h"
+
+1460893104 c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\object.h
+	<iostream>
+	<windows.h>
+	<cmath>
+
+1460894372 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\main.cpp
+	<windows.h>
+	"resource.h"
+	"object.h"
+
+1460893455 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\interaction.cpp
+	"object.h"
+
+1460889740 c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\interaction.h
+
+1460893928 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\collision.cpp
+	"object.h"
+
+1460890949 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\circle.cpp
+
+1460894125 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\circle_move.cpp
+	"object.h"
+
+1460891946 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\accelerate.cpp
+	"object.h"
+
+1460891946 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\color.cpp
+	"object.h"
+
+1460891946 source:c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\shape.cpp
+	"object.h"
+
+1460893117 c:\users\dorin\desktop\sem 2\programarea in windows\laboratory 4\lab4\resource.h
+
